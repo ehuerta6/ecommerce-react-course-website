@@ -7,9 +7,9 @@ export default function Auth() {
   const [mode, setMode] = useState("signup");
   const [error, setError] = useState(null);
 
-  const { signUp, login } = useAuth();
-
   const navigate = useNavigate();
+
+  const { signUp, login } = useAuth();
 
   const {
     register,
@@ -25,10 +25,11 @@ export default function Auth() {
     } else {
       result = login(data.email, data.password);
     }
+
     if (result.success) {
       navigate("/");
     } else {
-      setError(result.message || result.error);
+      setError(result.error);
     }
   }
 
@@ -37,7 +38,7 @@ export default function Auth() {
       <div className="container">
         <div className="auth-container">
           <h1 className="page-title">
-            {mode === "signup" ? "Sign Up" : "Log In"}
+            {mode === "signup" ? "Sign Up" : "Login"}
           </h1>
           <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
             {error && <div className="error-message">{error}</div>}
@@ -49,9 +50,8 @@ export default function Auth() {
                 className="form-input"
                 type="email"
                 id="email"
-                {...register("email")}
+                {...register("email", { required: "Email is required" })}
               />
-
               {errors.email && (
                 <span className="form-error">{errors.email.message}</span>
               )}
@@ -61,9 +61,6 @@ export default function Auth() {
                 Password
               </label>
               <input
-                className="form-input"
-                type="password"
-                id="password"
                 {...register("password", {
                   required: "Password is required",
                   minLength: {
@@ -75,28 +72,37 @@ export default function Auth() {
                     message: "Password must be less than 12 characters",
                   },
                 })}
+                className="form-input"
+                type="password"
+                id="password"
               />
-
               {errors.password && (
                 <span className="form-error">{errors.password.message}</span>
               )}
             </div>
-            <button className="btn btn-primary btn-large" type="submit">
-              {mode === "signup" ? "Sign Up" : "Log In"}
+
+            <button type="submit" className="btn btn-primary btn-large">
+              {mode === "signup" ? "Sign Up" : "Login"}
             </button>
           </form>
+
           <div className="auth-switch">
-            <p>
-              {mode === "signup"
-                ? "Already have an account? "
-                : "Don't have an account? "}
-              <span
-                className="auth-link"
-                onClick={() => setMode(mode === "signup" ? "login" : "signup")}
-              >
-                {mode === "signup" ? "Log in" : "Sign up"}
-              </span>
-            </p>
+            {mode === "signup" ? (
+              <p>
+                Already have an account?{" "}
+                <span className="auth-link" onClick={() => setMode("login")}>
+                  Login
+                </span>
+              </p>
+            ) : (
+              <p>
+                {" "}
+                Don't have an account?{" "}
+                <span className="auth-link" onClick={() => setMode("signup")}>
+                  Sign Up
+                </span>
+              </p>
+            )}
           </div>
         </div>
       </div>
